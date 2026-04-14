@@ -74,10 +74,12 @@ jobs:
           gitleaks version
 
       - name: Run Gitleaks (repo scan)
+        # --config points at our custom rules that remove the docs-example allowlist
         # --exit-code 0 → don't fail the job; we evaluate severity in normalize.py
         run: |
           gitleaks detect \
             --source . \
+            --config .gitleaks.toml \
             --report-format json \
             --report-path scan-results/gitleaks.json \
             --exit-code 0
@@ -112,14 +114,12 @@ jobs:
 
       - name: Run Checkov on infra/
         run: |
-          checkov \
-            --directory infra \
-            --output json \
-            --output-file-path scan-results \
-            --quiet \
+          # Redirect stdout directly — avoids --output-file-path naming quirks across versions
+          checkov --directory infra --output json --compact --quiet \
+            > scan-results/checkov.json \
           || true
-          # Checkov names the file results_checkov.json — rename for consistency
-          mv scan-results/results_checkov.json scan-results/checkov.json 2>/dev/null \
+          # Ensure we always have valid JSON even if checkov wrote nothing
+          python3 -c "import json,sys; json.load(open('scan-results/checkov.json'))" 2>/dev/null \
             || echo '{"results":{"failed_checks":[],"passed_checks":[]}}' \
                > scan-results/checkov.json
 

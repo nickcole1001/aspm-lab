@@ -1,0 +1,27 @@
+# Custom Gitleaks config for the ASPM demo repo.
+#
+# Why this exists:
+#   The default aws-access-token rule has AKIAIOSFODNN7EXAMPLE in its allowlist
+#   because it's the canonical AWS documentation example key. We override it here
+#   with a demo-specific rule that has NO allowlist, so the scanner fires as
+#   intended in this learning project.
+#
+# The key is intentionally fake — it follows the AKIA[A-Z0-9]{16} pattern but
+#   is the well-known AWS docs example and will never authenticate against AWS.
+
+title = "ASPM Lab"
+
+[[rules]]
+id          = "demo-aws-access-key-id"
+description = "Hardcoded AWS Access Key ID (demo rule — no allowlist)"
+regex       = '''(?:A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+tags        = ["secret", "aws", "access-key"]
+
+  [rules.allowlist]
+  regexes = []   # explicitly empty — we want to catch the docs example key
+
+[[rules]]
+id          = "demo-aws-secret-access-key"
+description = "Hardcoded AWS Secret Access Key (demo rule)"
+regex       = '''(?i)aws[_\-\s]?secret[_\-\s]?(?:access[_\-\s]?)?key(?:[_\-\s]?id)?\s*[=:]\s*["']?([A-Za-z0-9/+=]{40})["']?'''
+tags        = ["secret", "aws", "secret-key"]
