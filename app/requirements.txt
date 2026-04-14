@@ -1,0 +1,8 @@
+# Intentionally pinned to vulnerable versions for demo / learning purposes.
+# Each library below has published CVEs that dependency scanners will flag.
+
+Flask==0.12.2          # CVE-2018-1000656  – JSON encoding DoS
+Jinja2==2.10.1         # CVE-2019-10906    – sandbox escape; CVE-2019-8341
+requests==2.18.0       # CVE-2018-18074    – credential leak on redirect
+PyYAML==5.1            # CVE-2020-14343    – arbitrary code execution via load()
+Werkzeug==0.14.1       # CVE-2019-14806    – debugger PIN brute-force
